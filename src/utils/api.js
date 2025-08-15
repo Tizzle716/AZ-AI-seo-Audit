@@ -142,13 +142,13 @@ export const amazonScraperAPI = {
   /**
    * Scrape Amazon product data
    * @param {string} productUrl - Amazon product URL
-   * @param {string} tier - The scraping tier
-   * @returns {Promise} Product data
+   * @param {string} tier - Service tier
+   * @returns {Promise} Scraping results
    */
   scrapeProduct: async (productUrl, tier = 'free') => {
     try {
       const response = await api.post('/api/amazon_scraper', {
-        url: productUrl,
+        product_url: productUrl,
         tier,
       })
       return response.data
@@ -161,13 +161,58 @@ export const amazonScraperAPI = {
       )
     }
   },
+
+  /**
+   * Search Amazon products
+   * @param {string} query - Search query
+   * @param {string} tier - Service tier
+   * @param {number} limit - Number of products to return
+   * @returns {Promise} Search results
+   */
+  searchProducts: async (query, tier = 'free', limit = 10) => {
+    try {
+      const response = await api.post('/api/amazon_scraper', {
+        action: 'search',
+        query,
+        tier,
+        limit,
+      })
+      return response.data
+    } catch (error) {
+      console.error('Amazon Search API Error:', error)
+      throw new Error(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to search Amazon products'
+      )
+    }
+  },
+
+  /**
+   * Get scraping job status
+   * @param {string} jobId - Job ID
+   * @returns {Promise} Job status
+   */
+  getJobStatus: async (jobId) => {
+    try {
+      const response = await api.get(`/api/amazon_scraper/${jobId}`)
+      return response.data
+    } catch (error) {
+      console.error('Get Job Status Error:', error)
+      throw new Error(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to get job status'
+      )
+    }
+  },
 }
 
 // Sheets Cleaner API functions
 export const sheetsCleanerAPI = {
   /**
    * Clean and process spreadsheet data
-   * @param {File} file - The spreadsheet file
+   * @param {File} file - Spreadsheet file
    * @param {Object} options - Cleaning options
    * @returns {Promise} Cleaned data
    */
@@ -176,7 +221,7 @@ export const sheetsCleanerAPI = {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('options', JSON.stringify(options))
-
+      
       const response = await api.post('/api/sheets_cleaner', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -189,6 +234,73 @@ export const sheetsCleanerAPI = {
         error.response?.data?.message || 
         error.message || 
         'Failed to clean spreadsheet'
+      )
+    }
+  },
+
+  /**
+   * Process CSV data directly
+   * @param {Array} data - CSV data as array of arrays
+   * @param {Object} options - Processing options
+   * @param {string} tier - Service tier
+   * @returns {Promise} Processed data
+   */
+  processData: async (data, options = {}, tier = 'free') => {
+    try {
+      const response = await api.post('/api/sheets_cleaner', {
+        data,
+        options,
+        tier,
+      })
+      return response.data
+    } catch (error) {
+      console.error('Sheets Processing API Error:', error)
+      throw new Error(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to process data'
+      )
+    }
+  },
+
+  /**
+   * Get processing job status
+   * @param {string} jobId - Job ID
+   * @returns {Promise} Job status
+   */
+  getJobStatus: async (jobId) => {
+    try {
+      const response = await api.get(`/api/sheets_cleaner/${jobId}`)
+      return response.data
+    } catch (error) {
+      console.error('Get Job Status Error:', error)
+      throw new Error(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to get job status'
+      )
+    }
+  },
+
+  /**
+   * Download processed file
+   * @param {string} jobId - Job ID
+   * @param {string} format - File format (csv, xlsx, json)
+   * @returns {Promise} File blob
+   */
+  downloadFile: async (jobId, format = 'csv') => {
+    try {
+      const response = await api.get(`/api/sheets_cleaner/${jobId}/download`, {
+        params: { format },
+        responseType: 'blob',
+      })
+      return response.data
+    } catch (error) {
+      console.error('Download File Error:', error)
+      throw new Error(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to download file'
       )
     }
   },

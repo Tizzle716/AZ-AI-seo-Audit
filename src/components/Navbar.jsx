@@ -10,6 +10,8 @@ function Navbar({ currentPage, onNavigate }) {
   const navLinks = [
     { name: 'Home', page: 'home' },
     { name: 'SEO Audit', page: 'audit' },
+    { name: 'Amazon Scraper', page: 'amazon-scraper' },
+    { name: 'Sheets Cleaner', page: 'sheets-cleaner' },
     { name: 'Dashboard', page: 'dashboard' },
     { name: 'Pricing', page: 'pricing' },
   ]

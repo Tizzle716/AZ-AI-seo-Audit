@@ -4,6 +4,8 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
 import SEOAuditPage from './pages/SEOAuditPage'
+import AmazonScraperPage from './pages/AmazonScraperPage'
+import SheetsCleanerPage from './pages/SheetsCleanerPage'
 import ResultsPage from './pages/ResultsPage'
 import DashboardPage from './pages/DashboardPage'
 import PricingPage from './pages/PricingPage'
@@ -19,6 +21,10 @@ function App() {
         return <HomePage onNavigate={setCurrentPage} />
       case 'audit':
         return <SEOAuditPage onNavigate={setCurrentPage} onResults={setAuditResults} />
+      case 'amazon-scraper':
+        return <AmazonScraperPage onNavigate={setCurrentPage} />
+      case 'sheets-cleaner':
+        return <SheetsCleanerPage onNavigate={setCurrentPage} />
       case 'results':
         return <ResultsPage onNavigate={setCurrentPage} results={auditResults} />
       case 'dashboard':
