@@ -3,7 +3,7 @@
 
 param(
     [Parameter(Mandatory=$false)]
-    [string]$ApiToken = "4839fbeb04985bb6076a97c7a1c044b4908f568928cc7df4e76d9288a2aa128f02-70f84693-49af-44fb-85b2-bc2275aa213200f29080ac8c7a0f",
+    [string]$ApiToken = $env:AZURE_STATIC_WEB_APPS_API_TOKEN,
     
     [Parameter(Mandatory=$false)]
     [string]$AppLocation = "./dist",
@@ -15,6 +15,14 @@ param(
 Write-Host "Starting Azure Static Web Apps Deployment" -ForegroundColor Green
 Write-Host "App Name: $AppName" -ForegroundColor Yellow
 Write-Host "Build Location: $AppLocation" -ForegroundColor Yellow
+
+# Check if API token is set
+if ([string]::IsNullOrEmpty($ApiToken)) {
+    Write-Host "API Token is required but not set." -ForegroundColor Red
+    Write-Host "Please set the AZURE_STATIC_WEB_APPS_API_TOKEN environment variable" -ForegroundColor Red
+    Write-Host "or pass it as a parameter: -ApiToken '<your-token>'" -ForegroundColor Red
+    exit 1
+}
 
 # Check if dist folder exists
 if (-not (Test-Path $AppLocation)) {

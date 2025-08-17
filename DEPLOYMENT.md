@@ -38,8 +38,9 @@
 2. **Add Azure Static Web Apps API token as GitHub secret:**
    ```
    Secret Name: AZURE_STATIC_WEB_APPS_API_TOKEN
-   Secret Value: 4839fbeb04985bb6076a97c7a1c044b4908f568928cc7df4e76d9288a2aa128f02-70f84693-49af-44fb-85b2-bc2275aa213200f29080ac8c7a0f
+   Secret Value: [GENERATE IN AZURE PORTAL → Static Web App → Deployment tokens → Copy token]
    ```
+   Note: Do not commit tokens to source control. Rotate any previously exposed token in Azure.
 3. **GitHub Actions will automatically:**
    - Install dependencies
    - Build the application
