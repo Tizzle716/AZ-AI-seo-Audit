@@ -14,11 +14,13 @@
 
 | Resource | Name | Status | URL |
 |----------|------|--------|-----|
-| Static Web App | `seoaudit-webapp` | ✅ Active | https://witty-desert-0ac8c7a0f.2.azurestaticapps.net |
+| Static Web App | `seoaudit-webapp` | ✅ Active | <https://witty-desert-0ac8c7a0f.2.azurestaticapps.net> |
 | Function App | `seoaudit-functions` | ✅ Active | https://seoaudit-functions.azurewebsites.net |
 | Resource Group | `SEOAudit-RG` | ✅ Active | - |
 
 ## 🔧 Configuration Files
+
+
 
 ### Created Files:
 - ✅ `staticwebapp.config.json` - Azure SWA routing configuration

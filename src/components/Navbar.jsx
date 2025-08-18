@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 function Navbar({ currentPage, onNavigate }) {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, logout, isLoading } = useAuth()
 
   const isActive = (page) => {
     return currentPage === page
@@ -19,6 +21,15 @@ function Navbar({ currentPage, onNavigate }) {
   const handleNavigation = (page) => {
     onNavigate(page)
     setIsOpen(false)
+  }
+
+  const handleAuthClick = async () => {
+    if (user) {
+      await logout()
+      onNavigate('home')
+    } else {
+      onNavigate('login')
+    }
   }
 
   return (
@@ -57,6 +68,13 @@ function Navbar({ currentPage, onNavigate }) {
               className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
             >
               Get Started
+            </button>
+            <button 
+              onClick={handleAuthClick}
+              className="px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {user ? 'Logout' : 'Login'}
             </button>
           </div>
 
@@ -103,6 +121,13 @@ function Navbar({ currentPage, onNavigate }) {
               className="w-full text-left bg-blue-600 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors duration-200"
             >
               Get Started
+            </button>
+            <button 
+              onClick={handleAuthClick}
+              className="w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {user ? 'Logout' : 'Login'}
             </button>
           </div>
         </div>

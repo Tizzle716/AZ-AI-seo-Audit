@@ -5,6 +5,7 @@ import {
   CheckCircleIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
+import { seoAuditAPI } from '../utils/api'
 
 const tiers = [
   {
@@ -62,23 +63,8 @@ function SEOAuditPage({ onNavigate, onAuditComplete }) {
     setIsLoading(true)
 
     try {
-      // Call Azure Function API
-      const response = await fetch('https://seoaudit-functions.azurewebsites.net/api/seo_audit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: url.trim(),
-          tier: selectedTier,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
+      // Call Azure Function API using the centralized API utility
+      const result = await seoAuditAPI.runAudit(url.trim(), selectedTier)
       
       // Pass audit data to parent component
       onAuditComplete(result)
