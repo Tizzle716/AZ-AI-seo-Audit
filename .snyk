@@ -1,0 +1,31 @@
+# Snyk (https://snyk.io) policy file
+version: v1.25.0
+ignore: {}
+patch: {}
+
+# Language settings
+language-settings:
+  javascript:
+    # Ignore dev dependencies for production vulnerability scanning
+    ignore-dev-deps: true
+
+# License policies
+license-policy:
+  severity: medium
+  # Allow common open source licenses
+  allowed:
+    - MIT
+    - Apache-2.0
+    - BSD-2-Clause
+    - BSD-3-Clause
+    - ISC
+    - CC0-1.0
+  # Disallow copyleft licenses for commercial products
+  disallowed:
+    - GPL-2.0
+    - GPL-3.0
+    - AGPL-1.0
+    - AGPL-3.0
+    - LGPL-2.0
+    - LGPL-2.1
+    - LGPL-3.0
