@@ -14,11 +14,13 @@
 
 | Resource | Name | Status | URL |
 |----------|------|--------|-----|
-| Static Web App | `seoaudit-webapp` | ✅ Active | https://witty-desert-0ac8c7a0f.2.azurestaticapps.net |
+| Static Web App | `seoaudit-webapp` | ✅ Active | <https://witty-desert-0ac8c7a0f.2.azurestaticapps.net> |
 | Function App | `seoaudit-functions` | ✅ Active | https://seoaudit-functions.azurewebsites.net |
 | Resource Group | `SEOAudit-RG` | ✅ Active | - |
 
 ## 🔧 Configuration Files
+
+
 
 ### Created Files:
 - ✅ `staticwebapp.config.json` - Azure SWA routing configuration
@@ -38,8 +40,9 @@
 2. **Add Azure Static Web Apps API token as GitHub secret:**
    ```
    Secret Name: AZURE_STATIC_WEB_APPS_API_TOKEN
-   Secret Value: 4839fbeb04985bb6076a97c7a1c044b4908f568928cc7df4e76d9288a2aa128f02-70f84693-49af-44fb-85b2-bc2275aa213200f29080ac8c7a0f
+   Secret Value: [GENERATE IN AZURE PORTAL → Static Web App → Deployment tokens → Copy token]
    ```
+   Note: Do not commit tokens to source control. Rotate any previously exposed token in Azure.
 3. **GitHub Actions will automatically:**
    - Install dependencies
    - Build the application
@@ -76,12 +79,12 @@ npx @azure/static-web-apps-cli deploy --app-location ./dist --api-token "YOUR_AP
 
 ### Production Environment Variables:
 ```env
-REACT_APP_API_BASE_URL=https://seoaudit-functions.azurewebsites.net
-REACT_APP_ENVIRONMENT=production
-REACT_APP_ENABLE_ANALYTICS=true
-REACT_APP_ENABLE_ERROR_REPORTING=true
-REACT_APP_API_TIMEOUT=30000
-REACT_APP_DEBUG=false
+VITE_API_BASE_URL=https://seoaudit-functions.azurewebsites.net
+VITE_ENVIRONMENT=production
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_ERROR_REPORTING=true
+VITE_API_TIMEOUT=30000
+VITE_DEBUG=false
 ```
 
 ## 📊 Build Information

@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           import React, { useState } from 'react'
 import {
   MagnifyingGlassIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
+import { seoAuditAPI } from '../utils/api'
+import { measureApiCall, captureException, log } from '../utils/monitoring'
 
 const tiers = [
   {
@@ -60,31 +62,23 @@ function SEOAuditPage({ onNavigate, onAuditComplete }) {
     }
 
     setIsLoading(true)
+    log('info', 'Starting SEO audit', { url: url.trim(), tier: selectedTier })
 
     try {
-      // Call Azure Function API
-      const response = await fetch('https://seoaudit-functions.azurewebsites.net/api/seo_audit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: url.trim(),
-          tier: selectedTier,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
+      // Call Azure Function API using the centralized API utility with performance monitoring
+      const result = await measureApiCall(
+        'POST',
+        '/api/seo_audit',
+        async () => await seoAuditAPI.runAudit(url.trim(), selectedTier)
+      )
       
       // Pass audit data to parent component
       onAuditComplete(result)
+      log('info', 'SEO audit completed successfully', { url: url.trim(), tier: selectedTier })
       onNavigate('results')
     } catch (err) {
-      console.error('Audit failed:', err)
+      captureException(err, { url: url.trim(), tier: selectedTier })
+      log('error', 'SEO audit failed', { url: url.trim(), tier: selectedTier, error: err.message })
       setError('Failed to start audit. Please try again.')
     } finally {
       setIsLoading(false)
@@ -238,12 +232,14 @@ function SEOAuditPage({ onNavigate, onAuditComplete }) {
             </div>
 
             {/* Processing time */}
-            <div className="card">
+            <div className="card card-hover">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Processing Time
               </h3>
               <div className="flex items-center">
-                <ClockIcon className="h-5 w-5 text-primary-500 mr-3" />
+                <div className="p-2 rounded-lg bg-gradient-primary shadow-glow mr-3">
+                  <ClockIcon className="h-5 w-5 text-white" />
+                </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">2-5 minutes</p>
                   <p className="text-xs text-gray-500">Depending on website size</p>
@@ -252,7 +248,7 @@ function SEOAuditPage({ onNavigate, onAuditComplete }) {
             </div>
 
             {/* Support */}
-            <div className="card bg-primary-50 border-primary-200">
+            <div className="card card-hover bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200 shadow-glow">
               <h3 className="text-lg font-semibold text-primary-900 mb-2">
                 Need Help?
               </h3>
@@ -261,7 +257,7 @@ function SEOAuditPage({ onNavigate, onAuditComplete }) {
               </p>
               <a
                 href="#"
-                className="text-sm font-medium text-primary-600 hover:text-primary-500"
+                className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-500 transition-colors duration-200"
               >
                 Contact Support →
               </a>

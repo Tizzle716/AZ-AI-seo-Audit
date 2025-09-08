@@ -197,4 +197,7 @@ export const SubscriptionProvider = ({ children }) => {
   );
 };
 
+// Export the context as a named export to support `{ SubscriptionContext }` imports
+export { SubscriptionContext };
+
 export default SubscriptionContext;

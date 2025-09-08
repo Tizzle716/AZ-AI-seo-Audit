@@ -3,6 +3,7 @@ import { SubscriptionContext } from '../contexts/SubscriptionContext'
 import { amazonScraperAPI } from '../utils/api'
 import { FaAmazon, FaSearch, FaDownload, FaSpinner, FaExternalLinkAlt, FaStar, FaDollarSign } from 'react-icons/fa'
 import { toast } from 'react-hot-toast'
+import { measureUIInteraction, captureException, log } from '../utils/monitoring'
 
 const AmazonScraperPage = () => {
   const { subscription } = useContext(SubscriptionContext)
@@ -79,15 +80,30 @@ const AmazonScraperPage = () => {
   const downloadResults = () => {
     if (!results) return
     
-    const dataStr = JSON.stringify(results, null, 2)
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
-    
-    const exportFileDefaultName = `amazon-${activeTab}-${Date.now()}.json`
-    
-    const linkElement = document.createElement('a')
-    linkElement.setAttribute('href', dataUri)
-    linkElement.setAttribute('download', exportFileDefaultName)
-    linkElement.click()
+    measureUIInteraction('amazon_download_results', { tab: activeTab }, () => {
+      try {
+        log.info('Downloading Amazon scraper results', { tab: activeTab })
+        
+        const dataStr = JSON.stringify(results, null, 2)
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+        
+        const exportFileDefaultName = `amazon-${activeTab}-${Date.now()}.json`
+        
+        const linkElement = document.createElement('a')
+        linkElement.setAttribute('href', dataUri)
+        linkElement.setAttribute('download', exportFileDefaultName)
+        linkElement.click()
+        
+        log.info('Amazon scraper results downloaded successfully', { tab: activeTab })
+      } catch (error) {
+        captureException(error, {
+          tags: { action: 'amazon_download_results' },
+          extra: { tab: activeTab }
+        })
+        log.error('Failed to download Amazon scraper results', { tab: activeTab, error: error.message })
+        toast.error('Failed to download results')
+      }
+    })
   }
 
   const renderProductCard = (product, index) => (

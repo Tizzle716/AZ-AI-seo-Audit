@@ -75,8 +75,8 @@ seo-audit-ui/
 3. **Set up environment variables:**
    Create a `.env` file in the root directory:
    ```env
-   REACT_APP_API_BASE_URL=https://your-function-app.azurewebsites.net
-   REACT_APP_ENVIRONMENT=development
+   VITE_API_BASE_URL=https://your-function-app.azurewebsites.net
+VITE_ENVIRONMENT=development
    ```
 
 4. **Start the development server:**
@@ -109,7 +109,7 @@ The frontend integrates with Azure Functions through the API utility (`src/utils
 Update the API base URL in `src/utils/api.js` or use environment variables:
 
 ```javascript
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://your-function-app.azurewebsites.net'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://your-function-app.azurewebsites.net'
 ```
 
 ## Deployment
@@ -156,14 +156,14 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://your-functio
 
 ### Development
 ```env
-REACT_APP_API_BASE_URL=http://localhost:7071
-REACT_APP_ENVIRONMENT=development
+VITE_API_BASE_URL=http://localhost:7071
+VITE_ENVIRONMENT=development
 ```
 
 ### Production
 ```env
-REACT_APP_API_BASE_URL=https://your-function-app.azurewebsites.net
-REACT_APP_ENVIRONMENT=production
+VITE_API_BASE_URL=https://your-function-app.azurewebsites.net
+VITE_ENVIRONMENT=production
 ```
 
 ## Features Overview

@@ -14,6 +14,7 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
+import { measureUIInteraction, captureException, log } from '../utils/monitoring'
 
 function DashboardPage({ onNavigate }) {
   const {
@@ -99,8 +100,22 @@ function DashboardPage({ onNavigate }) {
   })
 
   const downloadAudit = (auditId, url) => {
-    // Simulate download - replace with actual implementation
-    console.log(`Downloading audit ${auditId} for ${url}`)
+    measureUIInteraction('dashboard_download_audit', { auditId, url }, () => {
+      try {
+        log.info('Downloading audit from dashboard', { auditId, url })
+        
+        // Actual implementation would go here
+        // For now, just log the action
+        
+        log.info('Audit downloaded successfully from dashboard', { auditId, url })
+      } catch (error) {
+        captureException(error, {
+          tags: { action: 'dashboard_download_audit' },
+          extra: { auditId, url }
+        })
+        log.error('Failed to download audit from dashboard', { auditId, url, error: error.message })
+      }
+    })
   }
 
   if (isLoading) {
@@ -137,10 +152,12 @@ function DashboardPage({ onNavigate }) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="card">
+          <div className="card card-hover">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <ChartBarIcon className="h-8 w-8 text-primary-600" />
+                <div className="p-3 rounded-lg bg-gradient-primary shadow-glow">
+                  <ChartBarIcon className="h-6 w-6 text-white" />
+                </div>
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Audits</p>
@@ -149,10 +166,12 @@ function DashboardPage({ onNavigate }) {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card card-hover">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <CalendarIcon className="h-8 w-8 text-success-600" />
+                <div className="p-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 shadow-glow">
+                  <CalendarIcon className="h-6 w-6 text-white" />
+                </div>
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">This Month</p>
@@ -161,11 +180,13 @@ function DashboardPage({ onNavigate }) {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card card-hover">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className={`text-2xl font-bold ${getScoreColor(stats.avg_score)}`}>
-                  {stats.avg_score}
+                <div className="p-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 shadow-glow">
+                  <div className={`text-xl font-bold text-white`}>
+                    {stats.avg_score}
+                  </div>
                 </div>
               </div>
               <div className="ml-4">
@@ -175,11 +196,13 @@ function DashboardPage({ onNavigate }) {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card card-hover">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="text-2xl font-bold text-danger-600">
-                  {stats.critical_issues}
+                <div className="p-3 rounded-lg bg-gradient-to-r from-red-500 to-pink-600 shadow-glow">
+                  <div className="text-xl font-bold text-white">
+                    {stats.critical_issues}
+                  </div>
                 </div>
               </div>
               <div className="ml-4">

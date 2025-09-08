@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 function Navbar({ currentPage, onNavigate }) {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, logout, isLoading } = useAuth()
 
   const isActive = (page) => {
     return currentPage === page
@@ -21,19 +23,31 @@ function Navbar({ currentPage, onNavigate }) {
     setIsOpen(false)
   }
 
+  const handleAuthClick = async () => {
+    if (user) {
+      await logout()
+      onNavigate('home')
+    } else {
+      onNavigate('login')
+    }
+  }
+
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Gradient top banner */}
+      <div className="h-1 bg-gradient-primary"></div>
+      <nav className="bg-white shadow-lg sticky top-0 z-50 animate-header">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <button 
               onClick={() => handleNavigation('home')} 
               className="flex-shrink-0 flex items-center"
             >
-              <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">S</span>
+              <div className="h-8 w-8 bg-gradient-primary rounded-lg flex items-center justify-center shadow-glow">
+                <span className="text-white font-bold text-lg">L</span>
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">SEO Audit</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">Lockin-Labs/TaskFlow SEO</span>
             </button>
           </div>
 
@@ -54,9 +68,16 @@ function Navbar({ currentPage, onNavigate }) {
             ))}
             <button 
               onClick={() => handleNavigation('audit')}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
+              className="btn-hero px-4 py-2 rounded-md text-sm font-medium"
             >
               Get Started
+            </button>
+            <button 
+              onClick={handleAuthClick}
+              className="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {user ? 'Logout' : 'Sign in'}
             </button>
           </div>
 
@@ -100,13 +121,21 @@ function Navbar({ currentPage, onNavigate }) {
             ))}
             <button 
               onClick={() => handleNavigation('audit')}
-              className="w-full text-left bg-blue-600 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors duration-200"
+              className="w-full text-left btn-hero px-3 py-2 rounded-md text-base font-medium"
             >
               Get Started
+            </button>
+            <button 
+              onClick={handleAuthClick}
+              className="w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {user ? 'Logout' : 'Login'}
             </button>
           </div>
         </div>
       )}
+    </>
     </nav>
   )
 }

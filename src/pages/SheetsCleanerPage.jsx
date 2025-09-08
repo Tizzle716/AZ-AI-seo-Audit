@@ -3,6 +3,7 @@ import { SubscriptionContext } from '../contexts/SubscriptionContext'
 import { sheetsCleanerAPI } from '../utils/api'
 import { FaFileExcel, FaUpload, FaDownload, FaSpinner, FaTrash, FaCheck, FaCog } from 'react-icons/fa'
 import { toast } from 'react-hot-toast'
+import { measureUIInteraction, captureException, log } from '../utils/monitoring'
 
 const SheetsCleanerPage = () => {
   const { subscription } = useContext(SubscriptionContext)
@@ -116,35 +117,50 @@ const SheetsCleanerPage = () => {
   const downloadProcessedFile = (format = 'csv') => {
     if (!results?.processed_data) return
     
-    let content, mimeType, extension
-    
-    switch (format) {
-      case 'csv':
-        content = convertToCSV(results.processed_data)
-        mimeType = 'text/csv'
-        extension = 'csv'
-        break
-      case 'json':
-        content = JSON.stringify(results.processed_data, null, 2)
-        mimeType = 'application/json'
-        extension = 'json'
-        break
-      default:
-        content = convertToCSV(results.processed_data)
-        mimeType = 'text/csv'
-        extension = 'csv'
-    }
-    
-    const blob = new Blob([content], { type: mimeType })
-    const url = URL.createObjectURL(blob)
-    
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `cleaned-data-${Date.now()}.${extension}`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    measureUIInteraction('sheets_download_processed_file', { format }, () => {
+      try {
+        log.info('Downloading processed sheets file', { format })
+        
+        let content, mimeType, extension
+        
+        switch (format) {
+          case 'csv':
+            content = convertToCSV(results.processed_data)
+            mimeType = 'text/csv'
+            extension = 'csv'
+            break
+          case 'json':
+            content = JSON.stringify(results.processed_data, null, 2)
+            mimeType = 'application/json'
+            extension = 'json'
+            break
+          default:
+            content = convertToCSV(results.processed_data)
+            mimeType = 'text/csv'
+            extension = 'csv'
+        }
+        
+        const blob = new Blob([content], { type: mimeType })
+        const url = URL.createObjectURL(blob)
+        
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `cleaned-data-${Date.now()}.${extension}`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+        
+        log.info('Processed sheets file downloaded successfully', { format })
+      } catch (error) {
+        captureException(error, {
+          tags: { action: 'sheets_download_processed_file' },
+          extra: { format }
+        })
+        log.error('Failed to download processed sheets file', { format, error: error.message })
+        toast.error('Failed to download file')
+      }
+    })
   }
 
   const convertToCSV = (data) => {

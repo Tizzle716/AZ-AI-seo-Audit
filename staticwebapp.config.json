@@ -1,37 +1,15 @@
 {
-  "routes": [
-    {
-      "route": "/api/*",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/*",
-      "serve": "/index.html",
-      "statusCode": 200
-    }
-  ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,ico,svg}", "/css/*"]
+    "exclude": [
+      "/assets/*",
+      "/*.{png,jpg,jpeg,gif,ico,svg,css,js,txt,xml}"
+    ]
   },
   "mimeTypes": {
     ".json": "application/json"
   },
   "globalHeaders": {
     "Cache-Control": "no-cache"
-  },
-  "responseOverrides": {
-    "401": {
-      "redirect": "/login",
-      "statusCode": 302
-    },
-    "403": {
-      "redirect": "/unauthorized",
-      "statusCode": 302
-    },
-    "404": {
-      "redirect": "/404",
-      "statusCode": 302
-    }
   }
 }
