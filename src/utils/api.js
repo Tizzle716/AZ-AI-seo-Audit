@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { measureApiCall, captureException, log } from './monitoring'
 
-// Azure Function App base URL - update this with your actual function app URL
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'
+// Azure Function App base URL - resolved from Vite env; empty string means use same-origin (enables Vite dev proxy)
+const API_BASE_URL = (import.meta?.env?.VITE_API_BASE_URL ?? '') || ''
 
 // Create axios instance with default config
 const api = axios.create({
@@ -59,13 +60,22 @@ export const seoAuditAPI = {
    */
   runAudit: async (url, tier = 'free') => {
     try {
-      const response = await api.post('/api/seo_audit', {
-        url,
-        tier,
-      })
+      log('info', 'Starting SEO audit', { url, tier })
+      const response = await measureApiCall(
+        'POST',
+        '/api/seo_audit',
+        async () => {
+          return await api.post('/api/seo_audit', {
+            url,
+            tier,
+          })
+        }
+      )
+      log('info', 'SEO audit completed', { url, tier })
       return response.data
     } catch (error) {
-      console.error('SEO Audit API Error:', error)
+      captureException(error, { operation: 'runAudit', url, tier })
+      log('error', 'SEO Audit API Error', { url, tier, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -81,10 +91,19 @@ export const seoAuditAPI = {
    */
   getAuditResults: async (auditId) => {
     try {
-      const response = await api.get(`/api/seo_audit/${auditId}`)
+      log('info', 'Getting audit results', { auditId })
+      const response = await measureApiCall(
+        'GET',
+        `/api/seo_audit/${auditId}`,
+        async () => {
+          return await api.get(`/api/seo_audit/${auditId}`)
+        }
+      )
+      log('info', 'Retrieved audit results', { auditId })
       return response.data
     } catch (error) {
-      console.error('Get Audit Results Error:', error)
+      captureException(error, { operation: 'getAuditResults', auditId })
+      log('error', 'Get Audit Results Error', { auditId, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -101,12 +120,21 @@ export const seoAuditAPI = {
    */
   getAuditHistory: async (page = 1, limit = 10) => {
     try {
-      const response = await api.get('/api/audits/history', {
-        params: { page, limit }
-      })
+      log('info', 'Getting audit history', { page, limit })
+      const response = await measureApiCall(
+        'GET',
+        '/api/audits/history',
+        async () => {
+          return await api.get('/api/audits/history', {
+            params: { page, limit }
+          })
+        }
+      )
+      log('info', 'Retrieved audit history', { page, limit })
       return response.data
     } catch (error) {
-      console.error('Get Audit History Error:', error)
+      captureException(error, { operation: 'getAuditHistory', page, limit })
+      log('error', 'Get Audit History Error', { page, limit, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -122,12 +150,21 @@ export const seoAuditAPI = {
    */
   downloadReport: async (auditId) => {
     try {
-      const response = await api.get(`/api/audits/${auditId}/report`, {
-        responseType: 'blob'
-      })
+      log('info', 'Downloading audit report', { auditId })
+      const response = await measureApiCall(
+        'GET',
+        `/api/audits/${auditId}/report`,
+        async () => {
+          return await api.get(`/api/audits/${auditId}/report`, {
+            responseType: 'blob'
+          })
+        }
+      )
+      log('info', 'Audit report downloaded successfully', { auditId })
       return response.data
     } catch (error) {
-      console.error('Download Report Error:', error)
+      captureException(error, { operation: 'downloadReport', auditId })
+      log('error', 'Download Report Error', { auditId, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -147,13 +184,22 @@ export const amazonScraperAPI = {
    */
   scrapeProduct: async (productUrl, tier = 'free') => {
     try {
-      const response = await api.post('/api/amazon_scraper', {
-        product_url: productUrl,
-        tier,
-      })
+      log('info', 'Starting Amazon product scrape', { productUrl, tier })
+      const response = await measureApiCall(
+        'POST',
+        '/api/amazon_scraper',
+        async () => {
+          return await api.post('/api/amazon_scraper', {
+            product_url: productUrl,
+            tier,
+          })
+        }
+      )
+      log('info', 'Amazon product scrape completed', { productUrl, tier })
       return response.data
     } catch (error) {
-      console.error('Amazon Scraper API Error:', error)
+      captureException(error, { operation: 'scrapeProduct', productUrl, tier })
+      log('error', 'Amazon Scraper API Error', { productUrl, tier, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -171,15 +217,24 @@ export const amazonScraperAPI = {
    */
   searchProducts: async (query, tier = 'free', limit = 10) => {
     try {
-      const response = await api.post('/api/amazon_scraper', {
-        action: 'search',
-        query,
-        tier,
-        limit,
-      })
+      log('info', 'Starting Amazon product search', { query, tier, limit })
+      const response = await measureApiCall(
+        'POST',
+        '/api/amazon_scraper',
+        async () => {
+          return await api.post('/api/amazon_scraper', {
+            action: 'search',
+            query,
+            tier,
+            limit,
+          })
+        }
+      )
+      log('info', 'Amazon product search completed', { query, tier, limit })
       return response.data
     } catch (error) {
-      console.error('Amazon Search API Error:', error)
+      captureException(error, { operation: 'searchProducts', query, tier, limit })
+      log('error', 'Amazon Search API Error', { query, tier, limit, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -195,10 +250,19 @@ export const amazonScraperAPI = {
    */
   getJobStatus: async (jobId) => {
     try {
-      const response = await api.get(`/api/amazon_scraper/${jobId}`)
+      log('info', 'Getting Amazon scraper job status', { jobId })
+      const response = await measureApiCall(
+        'GET',
+        `/api/amazon_scraper/${jobId}`,
+        async () => {
+          return await api.get(`/api/amazon_scraper/${jobId}`)
+        }
+      )
+      log('info', 'Retrieved Amazon scraper job status', { jobId })
       return response.data
     } catch (error) {
-      console.error('Get Job Status Error:', error)
+      captureException(error, { operation: 'getJobStatus', jobId })
+      log('error', 'Get Job Status Error', { jobId, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -218,18 +282,27 @@ export const sheetsCleanerAPI = {
    */
   cleanSpreadsheet: async (file, options = {}) => {
     try {
+      log('info', 'Starting spreadsheet cleaning', { fileName: file.name, options })
       const formData = new FormData()
       formData.append('file', file)
       formData.append('options', JSON.stringify(options))
       
-      const response = await api.post('/api/sheets_cleaner', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      const response = await measureApiCall(
+        'POST',
+        '/api/sheets_cleaner',
+        async () => {
+          return await api.post('/api/sheets_cleaner', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+        }
+      )
+      log('info', 'Spreadsheet cleaning completed', { fileName: file.name })
       return response.data
     } catch (error) {
-      console.error('Sheets Cleaner API Error:', error)
+      captureException(error, { operation: 'cleanSpreadsheet', fileName: file.name })
+      log('error', 'Sheets Cleaner API Error', { fileName: file.name, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -247,14 +320,23 @@ export const sheetsCleanerAPI = {
    */
   processData: async (data, options = {}, tier = 'free') => {
     try {
-      const response = await api.post('/api/sheets_cleaner', {
-        data,
-        options,
-        tier,
-      })
+      log('info', 'Starting data processing', { dataRows: data.length, options, tier })
+      const response = await measureApiCall(
+        'POST',
+        '/api/sheets_cleaner',
+        async () => {
+          return await api.post('/api/sheets_cleaner', {
+            data,
+            options,
+            tier,
+          })
+        }
+      )
+      log('info', 'Data processing completed', { dataRows: data.length, tier })
       return response.data
     } catch (error) {
-      console.error('Sheets Processing API Error:', error)
+      captureException(error, { operation: 'processData', dataRows: data.length, tier })
+      log('error', 'Sheets Processing API Error', { dataRows: data.length, tier, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -270,10 +352,19 @@ export const sheetsCleanerAPI = {
    */
   getJobStatus: async (jobId) => {
     try {
-      const response = await api.get(`/api/sheets_cleaner/${jobId}`)
+      log('info', 'Getting sheets cleaner job status', { jobId })
+      const response = await measureApiCall(
+        'GET',
+        `/api/sheets_cleaner/${jobId}`,
+        async () => {
+          return await api.get(`/api/sheets_cleaner/${jobId}`)
+        }
+      )
+      log('info', 'Retrieved sheets cleaner job status', { jobId })
       return response.data
     } catch (error) {
-      console.error('Get Job Status Error:', error)
+      captureException(error, { operation: 'getJobStatus', jobId })
+      log('error', 'Get Job Status Error', { jobId, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 
@@ -290,13 +381,22 @@ export const sheetsCleanerAPI = {
    */
   downloadFile: async (jobId, format = 'csv') => {
     try {
-      const response = await api.get(`/api/sheets_cleaner/${jobId}/download`, {
-        params: { format },
-        responseType: 'blob',
-      })
+      log('info', 'Downloading processed file', { jobId, format })
+      const response = await measureApiCall(
+        'GET',
+        `/api/sheets_cleaner/${jobId}/download`,
+        async () => {
+          return await api.get(`/api/sheets_cleaner/${jobId}/download`, {
+            params: { format },
+            responseType: 'blob',
+          })
+        }
+      )
+      log('info', 'File download completed', { jobId, format })
       return response.data
     } catch (error) {
-      console.error('Download File Error:', error)
+      captureException(error, { operation: 'downloadFile', jobId, format })
+      log('error', 'Download File Error', { jobId, format, error: error.message })
       throw new Error(
         error.response?.data?.message || 
         error.message || 

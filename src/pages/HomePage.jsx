@@ -53,16 +53,16 @@ function HomePage({ onNavigate }) {
     <div className="bg-white">
 
       {/* Hero section */}
-      <div className="relative isolate px-6 pt-14 lg:px-8">
+      <div className="relative isolate px-6 pt-14 lg:px-8 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20">
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary-400 to-primary-600 opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
+          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-primary opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
         </div>
         
         <div className="mx-auto max-w-4xl py-32 sm:py-48 lg:py-56">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+          <div className="text-center animate-header">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl text-shadow-hero">
               Professional{' '}
-              <span className="gradient-text">SEO Audit</span>{' '}
+              <span className="bg-gradient-primary bg-clip-text text-transparent">SEO Audit</span>{' '}
               System
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
@@ -72,13 +72,13 @@ function HomePage({ onNavigate }) {
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <button
                 onClick={() => onNavigate('audit')}
-                className="btn btn-primary btn-lg"
+                className="btn-hero px-8 py-3 rounded-lg text-base font-semibold"
               >
                 Start Free Audit
               </button>
               <button
                 onClick={() => onNavigate('pricing')}
-                className="btn btn-outline btn-lg"
+                className="px-8 py-3 rounded-lg text-base font-semibold text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
               >
                 View Pricing
               </button>
@@ -87,7 +87,7 @@ function HomePage({ onNavigate }) {
         </div>
         
         <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
-          <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-primary-400 to-primary-600 opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" />
+          <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-primary opacity-15 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" />
         </div>
       </div>
 
@@ -109,7 +109,7 @@ function HomePage({ onNavigate }) {
               {features.map((feature) => (
                 <div key={feature.name} className="relative pl-16">
                   <dt className="text-base font-semibold leading-7 text-gray-900">
-                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
+                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary shadow-glow">
                       <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
                     </div>
                     {feature.name}
@@ -149,25 +149,26 @@ function HomePage({ onNavigate }) {
       </div>
 
       {/* CTA section */}
-      <div className="bg-primary-600">
-        <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div className="bg-gradient-primary relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+        <div className="relative px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl text-shadow-hero">
               Ready to improve your SEO?
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-100">
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
               Start your free SEO audit today and discover opportunities to boost your search rankings.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <button
                 onClick={() => onNavigate('audit')}
-                className="rounded-md bg-white px-6 py-3 text-base font-semibold text-primary-600 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors"
+                className="rounded-lg bg-white px-8 py-3 text-base font-semibold text-blue-600 shadow-elevated hover:bg-gray-50 transition-all duration-200 hover:transform hover:-translate-y-0.5"
               >
                 Start Free Audit
               </button>
               <button
                 onClick={() => onNavigate('dashboard')}
-                className="text-base font-semibold leading-6 text-white hover:text-primary-100 transition-colors"
+                className="text-base font-semibold leading-6 text-white hover:text-blue-100 transition-colors"
               >
                 View Dashboard <span aria-hidden="true">→</span>
               </button>

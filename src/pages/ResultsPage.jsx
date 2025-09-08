@@ -11,6 +11,7 @@ import {
   DevicePhoneMobileIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
+import { measureUIInteraction, captureException, log } from '../utils/monitoring'
 
 function ResultsPage({ auditData: initialAuditData, onNavigate }) {
   const [auditData, setAuditData] = useState(initialAuditData || null)
@@ -52,40 +53,58 @@ function ResultsPage({ auditData: initialAuditData, onNavigate }) {
   }
 
   const downloadReport = () => {
-    // Create and download PDF report
-    const reportData = {
-      url: auditData.url,
-      timestamp: auditData.timestamp,
-      scores: auditData.scores,
-      issues: auditData.issues,
-    }
-    
-    const dataStr = JSON.stringify(reportData, null, 2)
-    const dataBlob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(dataBlob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `seo-audit-${auditData.url.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}.json`
-    link.click()
-    URL.revokeObjectURL(url)
+    measureUIInteraction('ResultsPage', 'downloadReport', () => {
+      try {
+        log('info', 'Downloading SEO audit report', { url: auditData.url })
+        
+        // Create and download PDF report
+        const reportData = {
+          url: auditData.url,
+          timestamp: auditData.timestamp,
+          scores: auditData.scores,
+          issues: auditData.issues,
+        }
+        
+        const dataStr = JSON.stringify(reportData, null, 2)
+        const dataBlob = new Blob([dataStr], { type: 'application/json' })
+        const url = URL.createObjectURL(dataBlob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `seo-audit-${auditData.url.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}.json`
+        link.click()
+        URL.revokeObjectURL(url)
+        
+        log('info', 'SEO audit report downloaded successfully', { url: auditData.url })
+      } catch (err) {
+        captureException(err, { action: 'downloadReport', url: auditData?.url })
+        log('error', 'Failed to download SEO audit report', { error: err.message })
+      }
+    })
   }
 
   const shareResults = async () => {
-    if (navigator.share) {
+    measureUIInteraction('ResultsPage', 'shareResults', async () => {
       try {
-        await navigator.share({
-          title: `SEO Audit Results for ${auditData.url}`,
-          text: `Check out the SEO audit results for ${auditData.url}`,
-          url: window.location.href,
-        })
+        log('info', 'Sharing SEO audit results', { url: auditData.url })
+        
+        if (navigator.share) {
+          await navigator.share({
+            title: `SEO Audit Results for ${auditData.url}`,
+            text: `Check out the SEO audit results for ${auditData.url}`,
+            url: window.location.href,
+          })
+          log('info', 'SEO audit results shared successfully', { url: auditData.url, method: 'webshare' })
+        } else {
+          // Fallback: copy to clipboard
+          await navigator.clipboard.writeText(window.location.href)
+          alert('Link copied to clipboard!')
+          log('info', 'SEO audit results link copied to clipboard', { url: auditData.url, method: 'clipboard' })
+        }
       } catch (err) {
-        console.log('Error sharing:', err)
+        captureException(err, { action: 'shareResults', url: auditData?.url })
+        log('error', 'Failed to share SEO audit results', { error: err.message })
       }
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
-      alert('Link copied to clipboard!')
-    }
+    })
   }
 
   if (isLoading) {

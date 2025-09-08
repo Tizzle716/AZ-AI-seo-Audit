@@ -2,8 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design system inspired by Loveable UI */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --primary: 206 100% 41%;
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 206 100% 55%;
+    --primary-soft: 206 100% 96%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --border: 214.3 31.8% 91.4%;
+    --radius: 0.75rem;
+    
+    /* Extended design tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(220 90% 56%) 100%);
+    --shadow-elevated: 0 10px 30px -10px hsl(var(--primary) / 0.25);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.35);
+  }
+}
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+@layer utilities {
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  .text-shadow-hero {
+    text-shadow: 0 6px 32px hsl(var(--primary-glow) / 0.35), 0 2px 6px hsl(var(--foreground) / 0.2);
+  }
+  .animate-header {
+    animation: fade-in-up 0.6s ease-out both;
+  }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Custom button styles */
@@ -31,12 +79,29 @@ body {
 }
 
 .btn-primary {
-  background-color: #2563eb;
-  color: white;
+  background-image: var(--gradient-primary);
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-glow);
+  transition: all 0.3s ease-out;
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-elevated), var(--shadow-glow);
+}
+
+.btn-hero {
+  background-image: var(--gradient-primary);
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-glow);
+  transition: all 0.3s ease-out;
+  font-weight: 600;
+}
+
+.btn-hero:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -60,11 +125,39 @@ body {
 
 /* Card styles */
 .card {
-  background-color: white;
-  border-radius: 0.5rem;
+  background-color: hsl(var(--background));
+  border-radius: var(--radius);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border: 1px solid hsl(var(--border));
   padding: 1.5rem;
+  transition: all 0.3s ease-out;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.card-gradient {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-elevated);
+  transition: all 0.3s ease-out;
+}
+
+.card-gradient:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated), var(--shadow-glow);
 }
 
 /* Input styles */

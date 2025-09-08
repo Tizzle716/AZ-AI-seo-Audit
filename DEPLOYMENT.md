@@ -79,12 +79,12 @@ npx @azure/static-web-apps-cli deploy --app-location ./dist --api-token "YOUR_AP
 
 ### Production Environment Variables:
 ```env
-REACT_APP_API_BASE_URL=https://seoaudit-functions.azurewebsites.net
-REACT_APP_ENVIRONMENT=production
-REACT_APP_ENABLE_ANALYTICS=true
-REACT_APP_ENABLE_ERROR_REPORTING=true
-REACT_APP_API_TIMEOUT=30000
-REACT_APP_DEBUG=false
+VITE_API_BASE_URL=https://seoaudit-functions.azurewebsites.net
+VITE_ENVIRONMENT=production
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_ERROR_REPORTING=true
+VITE_API_TIMEOUT=30000
+VITE_DEBUG=false
 ```
 
 ## 📊 Build Information

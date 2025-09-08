@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
 
       // Mock login API call - replace with actual auth service
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'}/api/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
 
       // Mock register API call - replace with actual auth service
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'}/api/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'}/api/auth/forgot-password`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://seoaudit-functions.azurewebsites.net'}/api/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
